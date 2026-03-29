@@ -19,6 +19,8 @@ export default function Layout({ children }) {
     navLinks.push({ path: '/admin', label: 'Team', icon: '👥' });
   }
 
+  // Note: "Add Expense" is accessible via the FAB on dashboard — no separate nav link needed
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Top Navigation */}

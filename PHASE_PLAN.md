@@ -34,7 +34,7 @@
 | 0 | Project Scaffold + Git Init | 20 min | ✅ COMPLETED |
 | 1 | Database Models + Auth System | 45 min | ✅ COMPLETED |
 | 2 | User Management — Admin Panel | 30 min | ✅ COMPLETED |
-| 3 | Expense Submission + Feed UI | 45 min | ⬜ NOT STARTED |
+| 3 | Expense Submission + Feed UI | 45 min | ✅ COMPLETED |
 | 4 | Approval Workflow | 50 min | ⬜ NOT STARTED |
 | 5 | Currency Conversion | 20 min | ⬜ NOT STARTED |
 | 6 | OCR Receipt Scanning + AI Suggestions | 40 min | ⬜ NOT STARTED |
@@ -306,8 +306,8 @@ git commit -m "feat(phase-2): admin user management — create employees, assign
 
 ## Phase 3: Expense Submission + Feed UI
 
-- **Status**: ⬜ NOT STARTED
-- **Completed**: —
+- **Status**: ✅ COMPLETED
+- **Completed**: 2026-03-29 12:00 IST
 - **Estimated Time**: 45 minutes
 - **Depends on**: Phase 1 ✅
 
@@ -316,24 +316,24 @@ Employee can submit expenses with form, view their expense feed with status trac
 
 ### Tasks
 
-- [ ] Create `server/routes/expenses.js`
-- [ ] `POST /api/expenses` — create expense (employee)
-- [ ] `GET /api/expenses` — scoped by role (employee: own, manager: team, admin: all)
-- [ ] `GET /api/expenses/:id` — single expense with approval history
-- [ ] Create `client/src/pages/Dashboard.jsx`
-- [ ] Greeting header with summary stats (total pending, approved this month)
-- [ ] Expense feed — vertical card list
-- [ ] Floating "+ Add Expense" FAB button
-- [ ] Filter tabs: All / Pending / Approved / Rejected
-- [ ] Create `client/src/pages/AddExpense.jsx`
-- [ ] Receipt upload area (top, prominent)
-- [ ] Form: amount, currency dropdown, category dropdown, description, date
-- [ ] "Amount in company currency" read-only display (placeholder for Phase 5)
-- [ ] Submit button
-- [ ] Create `client/src/components/ExpenseCard.jsx`
-- [ ] Amount (big, bold), category icon + label, date
-- [ ] Status badge (pending=yellow, approved=green, rejected=red)
-- [ ] AI suggestion line (placeholder for Phase 6)
+- [x] Create `server/routes/expenses.js`
+- [x] `POST /api/expenses` — create expense (employee)
+- [x] `GET /api/expenses` — scoped by role (employee: own, manager: team, admin: all)
+- [x] `GET /api/expenses/:id` — single expense with approval history
+- [x] Create `client/src/pages/Dashboard.jsx`
+- [x] Greeting header with summary stats (total pending, approved this month)
+- [x] Expense feed — vertical card list
+- [x] Floating "+ Add Expense" FAB button
+- [x] Filter tabs: All / Pending / Approved / Rejected
+- [x] Create `client/src/pages/AddExpense.jsx`
+- [x] Receipt upload area (top, prominent)
+- [x] Form: amount, currency dropdown, category dropdown, description, date
+- [x] "Amount in company currency" read-only display (placeholder for Phase 5)
+- [x] Submit button
+- [x] Create `client/src/components/ExpenseCard.jsx`
+- [x] Amount (big, bold), category icon + label, date
+- [x] Status badge (pending=yellow, approved=green, rejected=red)
+- [x] AI suggestion line (placeholder for Phase 6)
 
 ### Files to Create
 ```
@@ -344,11 +344,11 @@ client/src/components/ExpenseCard.jsx
 ```
 
 ### Acceptance Criteria
-- [ ] Employee can submit an expense via form
-- [ ] Dashboard shows expense feed with card layout
-- [ ] Filter tabs correctly filter by status
-- [ ] Status badges display correct colors
-- [ ] FAB button navigates to expense submission form
+- [x] Employee can submit an expense via form
+- [x] Dashboard shows expense feed with card layout
+- [x] Filter tabs correctly filter by status
+- [x] Status badges display correct colors
+- [x] FAB button navigates to expense submission form
 
 ### Git
 ```
@@ -699,3 +699,4 @@ git tag -a v0.1.0-mvp -m "SmartClaimr MVP — 5 hour build"
 | 2026-03-29 10:10 IST | Phase 0 | cc1cca09 | Scaffold complete. Vite+React+TW3 client, Express server, all verified. Commit: c0f00b9 |
 | 2026-03-29 11:00 IST | Phase 1 | 099316f9 | Auth system complete. SQLite schema (4 tables), signup/login/JWT, AuthContext, AuthPage, protected routes. All tests passing. |
 | 2026-03-29 11:30 IST | Phase 2 | 5cc6af78 | Admin panel complete. User CRUD API, card-based user list, add/edit/delete modals, role badges, manager assignment. Verified in browser. |
+| 2026-03-29 12:00 IST | Phase 3 | a6e9f004 | Expense submission + feed UI complete. Expense CRUD API with role-scoped access, Dashboard with stats/filters/card feed, AddExpense with category grid + receipt upload + preview. All verified in browser. |
