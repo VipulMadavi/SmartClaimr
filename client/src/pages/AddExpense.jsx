@@ -4,11 +4,11 @@
  * Features:
  *   - Receipt upload area (placeholder for Phase 6 OCR)
  *   - Amount, currency, category, description, date fields
- *   - "Amount in company currency" read-only display (placeholder for Phase 5)
+ *   - Live currency conversion display (Phase 5)
  *   - Submit button
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Layout from '../components/Layout';
@@ -28,6 +28,11 @@ const COMMON_CURRENCIES = [
   { code: 'CHF', name: 'Swiss Franc', symbol: 'CHF' },
 ];
 
+/** Helper: get symbol for a currency code */
+function getCurrencySymbol(code) {
+  return COMMON_CURRENCIES.find((c) => c.code === code)?.symbol || code;
+}
+
 export default function AddExpense() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -42,6 +47,57 @@ export default function AddExpense() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [receiptPreview, setReceiptPreview] = useState(null);
+
+  // ── Currency conversion state ─────────────────
+  const [conversion, setConversion] = useState(null); // { convertedAmount, rate }
+  const [convertLoading, setConvertLoading] = useState(false);
+  const [convertError, setConvertError] = useState(null);
+  const debounceRef = useRef(null);
+
+  const companyCurrency = user?.currencyCode || 'INR';
+  const isForeignCurrency = form.currencyCode !== companyCurrency;
+
+  /**
+   * Fetch live conversion when amount or currency changes
+   */
+  useEffect(() => {
+    // Clear previous
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    // Reset if same currency or no amount
+    if (!isForeignCurrency || !form.amount || Number(form.amount) <= 0) {
+      setConversion(null);
+      setConvertError(null);
+      setConvertLoading(false);
+      return;
+    }
+
+    setConvertLoading(true);
+    setConvertError(null);
+
+    // Debounce 400ms to avoid spamming API
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const data = await api.get(
+          `/expenses/convert?amount=${form.amount}&from=${form.currencyCode}&to=${companyCurrency}`
+        );
+        setConversion({ convertedAmount: data.convertedAmount, rate: data.rate });
+        setConvertError(null);
+      } catch (err) {
+        setConversion(null);
+        setConvertError(err.data?.fallback
+          ? 'Conversion unavailable — you can still submit.'
+          : 'Unable to fetch exchange rate.'
+        );
+      } finally {
+        setConvertLoading(false);
+      }
+    }, 400);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [form.amount, form.currencyCode, companyCurrency, isForeignCurrency]);
 
   /**
    * Handle form field changes
@@ -186,7 +242,7 @@ export default function AddExpense() {
               <div className="flex gap-3">
                 <div className="flex-1 relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
-                    {COMMON_CURRENCIES.find((c) => c.code === form.currencyCode)?.symbol || '$'}
+                    {getCurrencySymbol(form.currencyCode)}
                   </span>
                   <input
                     type="number"
@@ -216,13 +272,40 @@ export default function AddExpense() {
               </div>
             </div>
 
-            {/* Amount in company currency — Phase 5 placeholder */}
-            {form.currencyCode !== user?.currencyCode && form.amount && (
-              <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 text-sm">≈</span>
-                <span className="text-sm text-slate-500">
-                  Converted amount in {user?.currencyCode} — coming in Phase 5
-                </span>
+            {/* ── Live Currency Conversion ─────── */}
+            {isForeignCurrency && form.amount && Number(form.amount) > 0 && (
+              <div className="animate-slide-down">
+                {convertLoading ? (
+                  <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-slate-50 border border-slate-100">
+                    <svg className="animate-spin h-4 w-4 text-brand-500" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    <span className="text-sm text-slate-500">Converting...</span>
+                  </div>
+                ) : convertError ? (
+                  <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200">
+                    <span className="text-amber-500 text-sm">⚠️</span>
+                    <span className="text-sm text-amber-700">{convertError}</span>
+                  </div>
+                ) : conversion ? (
+                  <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-gradient-to-r from-brand-50/70 to-indigo-50/70 border border-brand-100">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-brand-500 text-lg">💱</span>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-800">
+                          ≈ {getCurrencySymbol(companyCurrency)}{conversion.convertedAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          1 {form.currencyCode} = {conversion.rate.toFixed(4)} {companyCurrency}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-medium" id="conversion-badge">
+                      Live rate
+                    </span>
+                  </div>
+                ) : null}
               </div>
             )}
           </div>
@@ -344,10 +427,17 @@ export default function AddExpense() {
                       <p className="text-xs text-slate-400 truncate">{form.description}</p>
                     )}
                   </div>
-                  <p className="text-lg font-bold text-slate-900">
-                    {COMMON_CURRENCIES.find((c) => c.code === form.currencyCode)?.symbol}
-                    {Number(form.amount).toLocaleString()}
-                  </p>
+                  <div className="text-right">
+                    <p className="text-lg font-bold text-slate-900">
+                      {getCurrencySymbol(form.currencyCode)}
+                      {Number(form.amount).toLocaleString()}
+                    </p>
+                    {isForeignCurrency && conversion && (
+                      <p className="text-xs text-slate-500">
+                        ≈ {getCurrencySymbol(companyCurrency)}{conversion.convertedAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

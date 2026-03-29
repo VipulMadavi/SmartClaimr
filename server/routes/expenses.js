@@ -9,6 +9,7 @@
 const express = require('express');
 const { getDb } = require('../db/init');
 const { authenticate } = require('../middleware/auth');
+const { convertCurrency, getRate } = require('../services/currency');
 
 const router = express.Router();
 
@@ -16,12 +17,56 @@ const router = express.Router();
 router.use(authenticate);
 
 /**
+ * GET /api/expenses/convert
+ *
+ * Live currency conversion preview for the frontend.
+ * Query: ?amount=100&from=USD&to=INR
+ * Returns: { convertedAmount, rate, from, to }
+ */
+router.get('/convert', async (req, res) => {
+  try {
+    const { amount, from, to } = req.query;
+
+    if (!amount || !from || !to) {
+      return res.status(400).json({ error: 'Missing required query params: amount, from, to' });
+    }
+
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      return res.status(400).json({ error: 'Amount must be a positive number.' });
+    }
+
+    if (from.toUpperCase() === to.toUpperCase()) {
+      return res.json({ convertedAmount: numericAmount, rate: 1, from, to });
+    }
+
+    const result = await convertCurrency(numericAmount, from, to);
+    if (!result) {
+      return res.status(502).json({
+        error: 'Currency conversion unavailable. You can still submit — conversion will be retried.',
+        fallback: true,
+      });
+    }
+
+    res.json({
+      convertedAmount: result.convertedAmount,
+      rate: result.rate,
+      from: from.toUpperCase(),
+      to: to.toUpperCase(),
+    });
+  } catch (err) {
+    console.error('Currency convert error:', err.message);
+    res.status(500).json({ error: 'Failed to convert currency.' });
+  }
+});
+
+/**
  * POST /api/expenses
  *
  * Creates a new expense for the authenticated user.
  * Body: { amount, currencyCode, category, description, expenseDate, receiptUrl? }
  */
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { amount, currencyCode, category, description, expenseDate, receiptUrl } = req.body;
 
@@ -48,14 +93,25 @@ router.post('/', (req, res) => {
 
     const db = getDb();
 
-    // Get company currency for conversion placeholder
+    // Get company currency for conversion
     const company = db.prepare('SELECT currency_code FROM companies WHERE id = ?')
       .get(req.user.company_id);
 
-    // Amount in company currency — placeholder for Phase 5 (currency conversion)
-    const amountInCompanyCurrency = currencyCode === company.currency_code
-      ? amount
-      : null; // Will be filled by currency conversion service in Phase 5
+    // Convert to company currency
+    let amountInCompanyCurrency = null;
+    if (currencyCode === company.currency_code) {
+      amountInCompanyCurrency = amount;
+    } else {
+      try {
+        const result = await convertCurrency(amount, currencyCode, company.currency_code);
+        if (result) {
+          amountInCompanyCurrency = result.convertedAmount;
+        }
+      } catch (convErr) {
+        console.warn('Currency conversion failed on submit:', convErr.message);
+        // Allow submission without conversion — can be filled later
+      }
+    }
 
     const result = db.prepare(`
       INSERT INTO expenses (employee_id, amount, currency_code, amount_in_company_currency, category, description, expense_date, receipt_url)
