@@ -1,0 +1,17 @@
+{
+  "name": "smartclaimr",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SmartClaimr — Intelligent Expense Reimbursement Management System",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && node app.js",
+    "install:all": "npm install --workspaces"
+  },
+  "keywords": ["expense", "reimbursement", "fintech", "ocr"],
+  "license": "MIT"
+}
