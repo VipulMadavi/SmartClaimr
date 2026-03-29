@@ -2,15 +2,17 @@
  * AddExpense — Expense submission form.
  *
  * Features:
- *   - Receipt upload area (placeholder for Phase 6 OCR)
+ *   - Receipt upload with OCR auto-fill (Tesseract.js)
+ *   - AI suggestion banner after receipt scan
  *   - Amount, currency, category, description, date fields
- *   - Live currency conversion display (Phase 5)
+ *   - Live currency conversion display
  *   - Submit button
  */
 
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/Toast';
 import Layout from '../components/Layout';
 import { CATEGORY_CONFIG } from '../components/ExpenseCard';
 import api from '../services/api';
@@ -36,6 +38,7 @@ function getCurrencySymbol(code) {
 export default function AddExpense() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState({
     amount: '',
@@ -47,6 +50,12 @@ export default function AddExpense() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [receiptPreview, setReceiptPreview] = useState(null);
+  const [receiptFile, setReceiptFile] = useState(null);
+
+  // ── OCR state ─────────────────────────────────
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const [ocrSuggestion, setOcrSuggestion] = useState(null); // AI suggestion string
+  const [ocrAutoFilled, setOcrAutoFilled] = useState(false); // Whether fields were auto-filled
 
   // ── Currency conversion state ─────────────────
   const [conversion, setConversion] = useState(null); // { convertedAmount, rate }
@@ -109,15 +118,64 @@ export default function AddExpense() {
   }
 
   /**
-   * Handle receipt file selection (visual preview only — OCR in Phase 6)
+   * Handle receipt file selection — creates preview + triggers OCR
    */
-  function handleReceiptChange(e) {
+  async function handleReceiptChange(e) {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setReceiptPreview(reader.result);
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // Create preview immediately
+    const reader = new FileReader();
+    reader.onloadend = () => setReceiptPreview(reader.result);
+    reader.readAsDataURL(file);
+    setReceiptFile(file);
+
+    // ── Trigger OCR ───────────────────────────
+    setOcrLoading(true);
+    setOcrSuggestion(null);
+    setOcrAutoFilled(false);
+
+    try {
+      const formData = new FormData();
+      formData.append('receipt', file);
+
+      const result = await api.upload('/ocr/parse', formData);
+
+      if (result.success && result.extracted) {
+        const { amount, date, description, category } = result.extracted;
+
+        // Auto-fill form fields (only non-empty values)
+        setForm((prev) => ({
+          ...prev,
+          ...(amount ? { amount: String(amount) } : {}),
+          ...(date ? { expenseDate: date } : {}),
+          ...(description ? { description } : {}),
+          ...(category ? { category } : {}),
+        }));
+
+        setOcrAutoFilled(true);
+      }
+
+      // Show AI suggestion
+      if (result.suggestion) {
+        setOcrSuggestion(result.suggestion);
+      }
+    } catch (err) {
+      console.error('OCR failed:', err.message);
+      setOcrSuggestion('Couldn\'t read receipt — please fill in details manually.');
+    } finally {
+      setOcrLoading(false);
     }
+  }
+
+  /**
+   * Clear the receipt and reset OCR state
+   */
+  function clearReceipt() {
+    setReceiptPreview(null);
+    setReceiptFile(null);
+    setOcrSuggestion(null);
+    setOcrAutoFilled(false);
   }
 
   /**
@@ -147,6 +205,7 @@ export default function AddExpense() {
         description: form.description,
         expenseDate: form.expenseDate,
       });
+      showToast('✅ Expense submitted successfully!', 'success');
       navigate('/');
     } catch (err) {
       setError(err.message);
@@ -176,7 +235,7 @@ export default function AddExpense() {
             New Expense
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            Fill in the details below to submit your expense
+            Upload a receipt for auto-fill, or fill in manually
           </p>
         </div>
 
@@ -185,7 +244,7 @@ export default function AddExpense() {
           {/* ── Receipt Upload Area ─────────────── */}
           <div className="card p-5">
             <label className="block text-sm font-semibold text-slate-700 mb-3">
-              📸 Receipt (optional)
+              📸 Receipt (optional — auto-fills with AI)
             </label>
             <div
               className={`relative border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200
@@ -203,14 +262,36 @@ export default function AddExpense() {
                   />
                   <button
                     type="button"
-                    onClick={() => setReceiptPreview(null)}
+                    onClick={clearReceipt}
                     className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-danger-500 text-white text-xs flex items-center justify-center shadow-sm hover:bg-danger-600 transition-colors"
                   >
                     ×
                   </button>
-                  <p className="text-xs text-success-600 mt-2 font-medium">
-                    ✓ Receipt attached — OCR auto-fill coming in Phase 6
-                  </p>
+
+                  {/* OCR Loading Indicator */}
+                  {ocrLoading && (
+                    <div className="mt-3 flex items-center justify-center gap-2 text-sm text-brand-600 animate-pulse">
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      <span className="font-medium">🧠 Scanning receipt with AI...</span>
+                    </div>
+                  )}
+
+                  {/* OCR Success */}
+                  {!ocrLoading && ocrAutoFilled && (
+                    <p className="text-xs text-success-600 mt-2 font-medium">
+                      ✓ Receipt scanned — fields auto-filled
+                    </p>
+                  )}
+
+                  {/* OCR had no auto-fill but completed */}
+                  {!ocrLoading && !ocrAutoFilled && ocrSuggestion && (
+                    <p className="text-xs text-amber-600 mt-2 font-medium">
+                      ⚠️ {ocrSuggestion}
+                    </p>
+                  )}
                 </div>
               ) : (
                 <>
@@ -219,13 +300,13 @@ export default function AddExpense() {
                     Drag & drop a receipt, or click to browse
                   </p>
                   <p className="text-xs text-slate-400">
-                    PNG, JPG, or PDF up to 10MB
+                    PNG, JPG up to 10MB — AI will auto-fill fields
                   </p>
                 </>
               )}
               <input
                 type="file"
-                accept="image/*,.pdf"
+                accept="image/*"
                 onChange={handleReceiptChange}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 id="receipt-upload"
@@ -233,11 +314,26 @@ export default function AddExpense() {
             </div>
           </div>
 
+          {/* ── AI Suggestion Banner ──────────────── */}
+          {ocrSuggestion && ocrAutoFilled && !ocrLoading && (
+            <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 animate-slide-down" id="ai-suggestion-banner">
+              <span className="text-lg mt-0.5">🧠</span>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-indigo-800">AI Detection</p>
+                <p className="text-sm text-indigo-600">{ocrSuggestion}</p>
+                <p className="text-xs text-indigo-400 mt-1">You can edit any auto-filled field below</p>
+              </div>
+            </div>
+          )}
+
           {/* ── Amount + Currency ──────────────── */}
           <div className="card p-5 space-y-4">
             <div>
               <label htmlFor="amount" className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Amount <span className="text-danger-500">*</span>
+                {ocrAutoFilled && form.amount && (
+                  <span className="ml-2 text-xs bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full font-medium">AI filled</span>
+                )}
               </label>
               <div className="flex gap-3">
                 <div className="flex-1 relative">
@@ -314,6 +410,9 @@ export default function AddExpense() {
           <div className="card p-5">
             <label className="block text-sm font-semibold text-slate-700 mb-3">
               Category <span className="text-danger-500">*</span>
+              {ocrAutoFilled && form.category && (
+                <span className="ml-2 text-xs bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full font-medium">AI filled</span>
+              )}
             </label>
             <div className="grid grid-cols-3 gap-2">
               {Object.entries(CATEGORY_CONFIG).map(([key, cat]) => (
@@ -342,6 +441,9 @@ export default function AddExpense() {
             <div>
               <label htmlFor="description" className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Description
+                {ocrAutoFilled && form.description && (
+                  <span className="ml-2 text-xs bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full font-medium">AI filled</span>
+                )}
               </label>
               <textarea
                 id="description"
@@ -357,6 +459,9 @@ export default function AddExpense() {
             <div>
               <label htmlFor="expenseDate" className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Date <span className="text-danger-500">*</span>
+                {ocrAutoFilled && (
+                  <span className="ml-2 text-xs bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full font-medium">AI filled</span>
+                )}
               </label>
               <input
                 type="date"

@@ -10,6 +10,7 @@ const express = require('express');
 const { getDb } = require('../db/init');
 const { authenticate } = require('../middleware/auth');
 const { convertCurrency, getRate } = require('../services/currency');
+const { generateApprovalSuggestion } = require('../services/aiSuggestions');
 
 const router = express.Router();
 
@@ -140,7 +141,13 @@ router.post('/', async (req, res) => {
 
     res.status(201).json({
       message: 'Expense submitted successfully',
-      expense,
+      expense: {
+        ...expense,
+        ...(() => {
+          const suggestion = generateApprovalSuggestion(expense, db);
+          return { ai_suggestion: suggestion.text, ai_suggestion_level: suggestion.level };
+        })(),
+      },
     });
   } catch (err) {
     console.error('Create expense error:', err.message);
@@ -268,8 +275,18 @@ router.get('/', (req, res) => {
       LIMIT ? OFFSET ?
     `).all(...params, Number(limit), offset);
 
+    // Attach AI suggestions to each expense
+    const enrichedExpenses = expenses.map(exp => {
+      const suggestion = generateApprovalSuggestion(exp, db);
+      return {
+        ...exp,
+        ai_suggestion: suggestion.text,
+        ai_suggestion_level: suggestion.level,
+      };
+    });
+
     res.json({
-      expenses,
+      expenses: enrichedExpenses,
       stats,
       pagination: {
         page: Number(page),
@@ -339,8 +356,15 @@ router.get('/:id', (req, res) => {
       ORDER BY ea.acted_at ASC
     `).all(id);
 
+    // Generate AI suggestion for this expense
+    const suggestion = generateApprovalSuggestion(expense, db);
+
     res.json({
-      expense,
+      expense: {
+        ...expense,
+        ai_suggestion: suggestion.text,
+        ai_suggestion_level: suggestion.level,
+      },
       approvals,
     });
   } catch (err) {

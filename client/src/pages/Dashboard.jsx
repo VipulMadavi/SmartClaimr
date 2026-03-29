@@ -213,17 +213,24 @@ export default function Dashboard() {
         {/* ── FAB — Add Expense ───────────────────── */}
         <Link
           to="/expenses/new"
-          className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 w-14 h-14 rounded-2xl
-            bg-gradient-to-br from-brand-500 to-brand-700
-            text-white text-2xl font-light
-            flex items-center justify-center
-            shadow-elevated hover:shadow-xl
-            transition-all duration-300 hover:scale-105 active:scale-95
-            z-40"
+          className="fixed bottom-24 sm:bottom-8 right-5 sm:right-8 z-40 group"
           title="Add new expense"
           id="fab-add-expense"
         >
-          +
+          <div className="relative">
+            {/* Pulse ring */}
+            <div className="absolute inset-0 rounded-2xl bg-brand-500/30 animate-pulse-ring" />
+            {/* Button */}
+            <div className="relative w-14 h-14 rounded-2xl
+              bg-gradient-to-br from-brand-500 to-brand-700
+              text-white text-2xl font-light
+              flex items-center justify-center
+              shadow-glow-brand
+              transition-all duration-300 group-hover:scale-110 group-active:scale-95
+            ">
+              +
+            </div>
+          </div>
         </Link>
       </div>
     </Layout>

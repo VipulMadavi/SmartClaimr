@@ -8,6 +8,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/Toast';
 import Layout from '../components/Layout';
 import ExpenseCard from '../components/ExpenseCard';
 import api from '../services/api';
@@ -17,7 +18,7 @@ export default function ApprovalsPage() {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [toast, setToast] = useState(null);
+  const { showToast } = useToast();
   const [actingOn, setActingOn] = useState(null); // expenseId currently being processed
   const [removingIds, setRemovingIds] = useState(new Set()); // ids animating out
 
@@ -41,13 +42,7 @@ export default function ApprovalsPage() {
     fetchPending();
   }, [fetchPending]);
 
-  /**
-   * Show a toast notification
-   */
-  function showToast(message, type = 'success') {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3500);
-  }
+
 
   /**
    * Handle approve action
@@ -204,22 +199,6 @@ export default function ApprovalsPage() {
         )}
       </div>
 
-      {/* ── Toast Notification ─────────────────── */}
-      {toast && (
-        <div
-          className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50
-            px-5 py-3 rounded-2xl shadow-elevated
-            text-sm font-semibold
-            animate-slide-up
-            ${toast.type === 'success'
-              ? 'bg-success-500 text-white'
-              : 'bg-danger-500 text-white'
-            }`}
-          style={{ animationDuration: '300ms' }}
-        >
-          {toast.message}
-        </div>
-      )}
     </Layout>
   );
 }

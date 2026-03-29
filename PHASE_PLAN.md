@@ -37,8 +37,8 @@
 | 3 | Expense Submission + Feed UI | 45 min | ✅ COMPLETED |
 | 4 | Approval Workflow | 50 min | ✅ COMPLETED |
 | 5 | Currency Conversion | 20 min | ✅ COMPLETED |
-| 6 | OCR Receipt Scanning + AI Suggestions | 40 min | ⬜ NOT STARTED |
-| 7 | UI Polish + Responsive Design | 30 min | ⬜ NOT STARTED |
+| 6 | OCR Receipt Scanning + AI Suggestions | 40 min | ✅ COMPLETED |
+| 7 | UI Polish + Responsive Design | 30 min | ✅ COMPLETED |
 | 8 | Testing + Final Fixes + Release Tag | 20 min | ⬜ NOT STARTED |
 | | **Total** | **~5 hrs** | |
 
@@ -488,8 +488,8 @@ git commit -m "feat(phase-5): multi-currency support — auto-conversion on expe
 
 ## Phase 6: OCR Receipt Scanning + AI Suggestions
 
-- **Status**: ⬜ NOT STARTED
-- **Completed**: —
+- **Status**: ✅ COMPLETED
+- **Completed**: 2026-03-29 13:25 IST
 - **Estimated Time**: 40 minutes
 - **Depends on**: Phase 3 ✅
 
@@ -498,23 +498,23 @@ Upload receipt → auto-fill form fields. AI suggestions displayed on every expe
 
 ### Tasks
 
-- [ ] Create `server/routes/ocr.js`
-- [ ] `POST /api/ocr/parse` — accepts image upload (multer), runs Tesseract.js
-- [ ] Extract text, apply keyword matching for category detection
-- [ ] Return: `{ amount, date, description, merchant, category }`
-- [ ] Create `server/services/aiSuggestions.js`
-- [ ] Rule-based engine (no ML):
+- [x] Create `server/routes/ocr.js`
+- [x] `POST /api/ocr/parse` — accepts image upload (multer), runs Tesseract.js
+- [x] Extract text, apply keyword matching for category detection
+- [x] Return: `{ amount, date, description, merchant, category }`
+- [x] Create `server/services/aiSuggestions.js`
+- [x] Rule-based engine (no ML):
   - Amount < 1000 → `"Safe to approve"`
   - 1000–5000 → `"Looks normal"`
   - Amount > 5000 → `"Unusual amount — review carefully"`
   - Same amount + same date → `"Possible duplicate expense"`
-- [ ] Category detection via keywords: "uber" → Travel, "cafe" → Food, etc.
-- [ ] Modify `client/src/pages/AddExpense.jsx`
-- [ ] On receipt upload: call `/api/ocr/parse`, auto-fill form fields
-- [ ] Show AI suggestion banner: `"🧠 Detected a Food expense from McDonald's"`
-- [ ] Modify `client/src/components/ExpenseCard.jsx`
-- [ ] Display AI suggestion line: `🧠 AI: Safe to approve`
-- [ ] Color-coded: green (safe), orange (warning), red (risk)
+- [x] Category detection via keywords: "uber" → Travel, "cafe" → Food, etc.
+- [x] Modify `client/src/pages/AddExpense.jsx`
+- [x] On receipt upload: call `/api/ocr/parse`, auto-fill form fields
+- [x] Show AI suggestion banner: `"🧠 Detected a Food expense from McDonald's"`
+- [x] Modify `client/src/components/ExpenseCard.jsx`
+- [x] Display AI suggestion line: `🧠 AI: Safe to approve`
+- [x] Color-coded: green (safe), orange (warning), red (risk)
 
 ### Files to Create/Modify
 ```
@@ -525,11 +525,11 @@ client/src/components/ExpenseCard.jsx (MODIFY)
 ```
 
 ### Acceptance Criteria
-- [ ] Uploading a receipt image triggers OCR and auto-fills form fields
-- [ ] Category is auto-detected from receipt text
-- [ ] AI suggestion appears on every expense card (color-coded)
-- [ ] Duplicate detection flags matching expenses
-- [ ] User can override all auto-filled values before submitting
+- [x] Uploading a receipt image triggers OCR and auto-fills form fields
+- [x] Category is auto-detected from receipt text
+- [x] AI suggestion appears on every expense card (color-coded)
+- [x] Duplicate detection flags matching expenses
+- [x] User can override all auto-filled values before submitting
 
 ### Git
 ```
@@ -551,8 +551,8 @@ git commit -m "feat(phase-6): OCR receipt scanning + AI smart suggestions on exp
 
 ## Phase 7: UI Polish + Responsive Design
 
-- **Status**: ⬜ NOT STARTED
-- **Completed**: —
+- **Status**: ✅ COMPLETED
+- **Completed**: 2026-03-29 13:40 IST
 - **Estimated Time**: 30 minutes
 - **Depends on**: Phases 3, 4 ✅ (minimum)
 
@@ -561,18 +561,18 @@ Make it look like a fintech app, not a hackathon project. Mobile-first responsiv
 
 ### Tasks
 
-- [ ] Apply fintech color palette across all pages:
+- [x] Apply fintech color palette across all pages:
   - Indigo primary, emerald success, amber warning, rose danger, slate backgrounds
-- [ ] Typography: Inter font, proper hierarchy (amount=2xl bold, labels=sm text-gray)
-- [ ] Cards: rounded-xl, soft shadows, hover lift animation
-- [ ] Buttons: large, pill-shaped, micro-animations on tap
-- [ ] Smooth page transitions, card entry animations (stagger)
-- [ ] Create `client/src/components/Toast.jsx` — success/error with auto-dismiss
-- [ ] Create `client/src/components/Navbar.jsx`
+- [x] Typography: Inter font, proper hierarchy (amount=2xl bold, labels=sm text-gray)
+- [x] Cards: rounded-xl, soft shadows, hover lift animation
+- [x] Buttons: large, pill-shaped, micro-animations on tap
+- [x] Smooth page transitions, card entry animations (stagger)
+- [x] Create `client/src/components/Toast.jsx` — success/error with auto-dismiss
+- [x] Create `client/src/components/Navbar.jsx`
   - Top nav: logo + user name + role badge + logout
   - Mobile: hamburger drawer or bottom tab bar
-- [ ] Add skeleton loaders for data fetching states
-- [ ] Mobile responsive: bottom nav bar, full-width cards, FAB button
+- [x] Add skeleton loaders for data fetching states
+- [x] Mobile responsive: bottom nav bar, full-width cards, FAB button
 - [ ] Dark mode (stretch — only if time allows)
 
 ### Files to Create/Modify
@@ -584,12 +584,12 @@ All pages and components              (MODIFY — polish)
 ```
 
 ### Acceptance Criteria
-- [ ] App looks like a modern fintech product (not a hackathon prototype)
-- [ ] All cards have shadows, rounded corners, hover effects
-- [ ] Typography hierarchy is clear and consistent
-- [ ] Toast notifications work for all user actions
-- [ ] Navigation works on both desktop and mobile viewports
-- [ ] Loading states show skeleton placeholders
+- [x] App looks like a modern fintech product (not a hackathon prototype)
+- [x] All cards have shadows, rounded corners, hover effects
+- [x] Typography hierarchy is clear and consistent
+- [x] Toast notifications work for all user actions
+- [x] Navigation works on both desktop and mobile viewports
+- [x] Loading states show skeleton placeholders
 
 ### Git
 ```
@@ -702,3 +702,5 @@ git tag -a v0.1.0-mvp -m "SmartClaimr MVP — 5 hour build"
 | 2026-03-29 12:00 IST | Phase 3 | a6e9f004 | Expense submission + feed UI complete. Expense CRUD API with role-scoped access, Dashboard with stats/filters/card feed, AddExpense with category grid + receipt upload + preview. All verified in browser. |
 | 2026-03-29 12:40 IST | Phase 4 | f0d1db1e | Approval workflow complete. 2-level approval logic (manager → admin escalation for ≥₹5000). ApprovalsPage with action cards, approve/reject with comments, card exit animations, toast notifications. Tested with manager/employee users. |
 | 2026-03-29 12:55 IST | Phase 5 | d93c9406 | Currency conversion complete. server/services/currency.js with in-memory caching (1hr TTL). /api/expenses/convert endpoint for live preview. Auto-conversion on expense submit. Frontend shows live rate badge with converted amount. Verified: 500 USD → ₹47,385 at 94.77 rate. |
+| 2026-03-29 13:25 IST | Phase 6 | 923b9e98 | OCR + AI suggestions complete. Tesseract.js OCR in server/routes/ocr.js, rule-based AI in server/services/aiSuggestions.js. Receipt upload auto-fills form fields. AI suggestions on all expense cards: Safe/Normal/Warning/Danger color-coded. Duplicate detection via same amount+date check. |
+| 2026-03-29 13:40 IST | Phase 7 | 3043a26d | UI polish complete. New Navbar component with SVG icons + mobile bottom tab bar. Global Toast system with context provider (success/error/warning/info). Enhanced CSS: gradient buttons, glow shadows, shimmer skeletons, toast animations, safe-area-inset support. FAB with pulse-ring animation. Mobile responsive at 375px verified. |

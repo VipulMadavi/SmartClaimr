@@ -158,11 +158,22 @@ export default function ExpenseCard({
             </div>
           )}
 
-          {/* AI Suggestion placeholder — Phase 6 */}
+          {/* AI Suggestion — color-coded by level */}
           {expense.ai_suggestion && (
-            <div className="mt-2 text-xs flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-brand-50 text-brand-600">
+            <div className={`mt-2 text-xs flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg
+              ${expense.ai_suggestion_level === 'safe'
+                ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                : expense.ai_suggestion_level === 'normal'
+                  ? 'bg-brand-50 text-brand-600 border border-brand-100'
+                  : expense.ai_suggestion_level === 'warning'
+                    ? 'bg-amber-50 text-amber-600 border border-amber-100'
+                    : expense.ai_suggestion_level === 'danger'
+                      ? 'bg-danger-50 text-danger-600 border border-danger-100'
+                      : 'bg-brand-50 text-brand-600 border border-brand-100'
+              }`}
+            >
               <span>🧠</span>
-              <span>{expense.ai_suggestion}</span>
+              <span className="font-medium">AI: {expense.ai_suggestion}</span>
             </div>
           )}
         </div>

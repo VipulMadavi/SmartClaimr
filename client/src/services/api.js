@@ -93,6 +93,29 @@ export const api = {
   post: (endpoint, body) => request(endpoint, { method: 'POST', body: JSON.stringify(body) }),
   patch: (endpoint, body) => request(endpoint, { method: 'PATCH', body: JSON.stringify(body) }),
   delete: (endpoint) => request(endpoint, { method: 'DELETE' }),
+
+  /**
+   * Upload a file via FormData (multipart/form-data).
+   * Does NOT set Content-Type — browser handles boundary.
+   */
+  upload: async (endpoint, formData) => {
+    const token = getToken();
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: formData,
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) {
+      const error = new Error(data?.error || `Upload failed with status ${response.status}`);
+      error.status = response.status;
+      error.data = data;
+      throw error;
+    }
+    return data;
+  },
 };
 
 export default api;

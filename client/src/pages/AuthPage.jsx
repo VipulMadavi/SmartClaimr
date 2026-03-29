@@ -60,14 +60,16 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-brand-50/30 to-slate-50 flex flex-col">
       {/* ── Header ───────────────────────────── */}
       <div className="p-6">
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-sm">
-            <span className="text-white text-sm font-bold">S</span>
+        <div className="flex items-center gap-2.5">
+          <div className="relative">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-glow-brand">
+              <span className="text-white text-sm font-bold">S</span>
+            </div>
           </div>
-          <span className="text-lg font-bold text-slate-900">
+          <span className="text-xl font-bold text-slate-900">
             Smart<span className="text-gradient">Claimr</span>
           </span>
         </div>
