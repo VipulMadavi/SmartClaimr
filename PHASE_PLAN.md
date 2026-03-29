@@ -33,7 +33,7 @@
 |-------|-------|-----------|--------|
 | 0 | Project Scaffold + Git Init | 20 min | ✅ COMPLETED |
 | 1 | Database Models + Auth System | 45 min | ✅ COMPLETED |
-| 2 | User Management — Admin Panel | 30 min | ⬜ NOT STARTED |
+| 2 | User Management — Admin Panel | 30 min | ✅ COMPLETED |
 | 3 | Expense Submission + Feed UI | 45 min | ⬜ NOT STARTED |
 | 4 | Approval Workflow | 50 min | ⬜ NOT STARTED |
 | 5 | Currency Conversion | 20 min | ⬜ NOT STARTED |
@@ -251,8 +251,8 @@ git commit -m "feat(phase-1): auth system — signup with auto company creation,
 
 ## Phase 2: User Management — Admin Panel
 
-- **Status**: ⬜ NOT STARTED
-- **Completed**: —
+- **Status**: ✅ COMPLETED
+- **Completed**: 2026-03-29 11:30 IST
 - **Estimated Time**: 30 minutes
 - **Depends on**: Phase 1 ✅
 - **Priority**: P2 (can be dropped if behind schedule)
@@ -262,16 +262,16 @@ Admin can create employees and managers, assign manager relationships.
 
 ### Tasks
 
-- [ ] Create `server/routes/users.js`
-- [ ] `GET /api/users` — list all company users (admin only)
-- [ ] `POST /api/users` — create user with role + managerId (admin only)
-- [ ] `PATCH /api/users/:id` — update role or managerId
-- [ ] Create `client/src/pages/AdminPage.jsx`
-- [ ] Card-based user list (NOT a table)
-- [ ] "Add User" modal: name, email, role dropdown, manager dropdown
-- [ ] Each user card: name, role badge, assigned manager
-- [ ] Add route/nav link for admin page
-- [ ] Test: admin creates employee, assigns manager
+- [x] Create `server/routes/users.js`
+- [x] `GET /api/users` — list all company users (admin only)
+- [x] `POST /api/users` — create user with role + managerId (admin only)
+- [x] `PATCH /api/users/:id` — update role or managerId
+- [x] Create `client/src/pages/AdminPage.jsx`
+- [x] Card-based user list (NOT a table)
+- [x] "Add User" modal: name, email, role dropdown, manager dropdown
+- [x] Each user card: name, role badge, assigned manager
+- [x] Add route/nav link for admin page
+- [x] Test: admin creates employee, assigns manager
 
 ### Files to Create
 ```
@@ -281,10 +281,10 @@ client/src/components/UserCard.jsx
 ```
 
 ### Acceptance Criteria
-- [ ] Admin can view list of all company users
-- [ ] Admin can create a new user (employee or manager)
-- [ ] Admin can assign/change a user's manager
-- [ ] Non-admin users cannot access these endpoints (403)
+- [x] Admin can view list of all company users
+- [x] Admin can create a new user (employee or manager)
+- [x] Admin can assign/change a user's manager
+- [x] Non-admin users cannot access these endpoints (403)
 
 ### Git
 ```
@@ -698,3 +698,4 @@ git tag -a v0.1.0-mvp -m "SmartClaimr MVP — 5 hour build"
 |------|-------|-------------|-------|
 | 2026-03-29 10:10 IST | Phase 0 | cc1cca09 | Scaffold complete. Vite+React+TW3 client, Express server, all verified. Commit: c0f00b9 |
 | 2026-03-29 11:00 IST | Phase 1 | 099316f9 | Auth system complete. SQLite schema (4 tables), signup/login/JWT, AuthContext, AuthPage, protected routes. All tests passing. |
+| 2026-03-29 11:30 IST | Phase 2 | 5cc6af78 | Admin panel complete. User CRUD API, card-based user list, add/edit/delete modals, role badges, manager assignment. Verified in browser. |
