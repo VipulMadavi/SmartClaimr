@@ -9,4 +9,13 @@
 **What was built**: Monorepo scaffolded. React+Vite frontend with Tailwind v3, Express backend skeleton with SQLite ready. Root workspace config, .gitignore, README, and this journal.
 **Decisions made**: SQLite over MongoDB for zero-config simplicity. Tailwind v3 for stability (not v4). Inter font from Google Fonts for fintech aesthetic. Indigo primary color palette for Stripe/Razorpay-inspired design.
 **Blockers / Surprises**: —
+**Commit**: `c0f00b9`
+
+---
+
+## Phase 1: Database + Auth — 2026-03-29 11:00 IST
+**Duration**: ~35m actual / 45m planned
+**What was built**: SQLite schema with 4 tables (companies, users, expenses, expense_approvals). Signup endpoint auto-creates company + admin user with JWT. Login endpoint validates credentials. Auth middleware with JWT verification and role-based access control. Frontend AuthPage with signup/login toggle form, AuthContext for state management, API service wrapper, and protected routes with BrowserRouter.
+**Decisions made**: Used `better-sqlite3` transactions for atomic company+user creation. JWT tokens expire after 7 days. Passwords hashed with bcryptjs (10 rounds). CORS configured for multiple localhost ports. `react-router-dom` added for client routing.
+**Blockers / Surprises**: CORS issue when Vite started on port 5174 instead of 5173 — fixed by accepting both ports. Signup response was missing currencyCode — fixed.
 **Commit**: `pending`

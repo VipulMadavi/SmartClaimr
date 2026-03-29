@@ -31,8 +31,8 @@
 
 | Phase | Title | Time Est. | Status |
 |-------|-------|-----------|--------|
-| 0 | Project Scaffold + Git Init | 20 min | ⬜ NOT STARTED |
-| 1 | Database Models + Auth System | 45 min | ⬜ NOT STARTED |
+| 0 | Project Scaffold + Git Init | 20 min | ✅ COMPLETED |
+| 1 | Database Models + Auth System | 45 min | ✅ COMPLETED |
 | 2 | User Management — Admin Panel | 30 min | ⬜ NOT STARTED |
 | 3 | Expense Submission + Feed UI | 45 min | ⬜ NOT STARTED |
 | 4 | Approval Workflow | 50 min | ⬜ NOT STARTED |
@@ -56,8 +56,8 @@
 
 ## Phase 0: Project Scaffold + Git Init + Journal Setup
 
-- **Status**: ⬜ NOT STARTED
-- **Completed**: —
+- **Status**: ✅ COMPLETED
+- **Completed**: 2026-03-29 10:10 IST
 - **Estimated Time**: 20 minutes
 
 ### Goal
@@ -65,21 +65,21 @@ Monorepo structure, all dependencies installed, git initialized, first journal e
 
 ### Tasks
 
-- [ ] Create root `package.json` (workspace config)
-- [ ] Create `.gitignore` (Node, env, build artifacts, SQLite DB files)
-- [ ] Create `README.md` with project overview
-- [ ] Create `journal.md` with first entry
-- [ ] Scaffold `client/` — `npx -y create-vite@latest ./client --template react`
-- [ ] Install & configure Tailwind CSS v3 in client
-- [ ] Set up Tailwind config with fintech color palette (indigo primary, slate backgrounds)
-- [ ] Add Inter font from Google Fonts
-- [ ] Create base layout component with simple nav placeholder
-- [ ] Scaffold `server/` — `npm init -y`
-- [ ] Install server deps: `express`, `cors`, `dotenv`, `better-sqlite3`, `bcryptjs`, `jsonwebtoken`
-- [ ] Create `server/app.js` with basic Express + CORS + JSON middleware
-- [ ] Create `server/.env` with `JWT_SECRET`, `DB_PATH`
-- [ ] Verify both `client` and `server` start without errors
-- [ ] Git init + first commit
+- [x] Create root `package.json` (workspace config)
+- [x] Create `.gitignore` (Node, env, build artifacts, SQLite DB files)
+- [x] Create `README.md` with project overview
+- [x] Create `journal.md` with first entry
+- [x] Scaffold `client/` — `npx -y create-vite@latest ./client --template react`
+- [x] Install & configure Tailwind CSS v3 in client
+- [x] Set up Tailwind config with fintech color palette (indigo primary, slate backgrounds)
+- [x] Add Inter font from Google Fonts
+- [x] Create base layout component with simple nav placeholder
+- [x] Scaffold `server/` — `npm init -y`
+- [x] Install server deps: `express`, `cors`, `dotenv`, `better-sqlite3`, `bcryptjs`, `jsonwebtoken`
+- [x] Create `server/app.js` with basic Express + CORS + JSON middleware
+- [x] Create `server/.env` with `JWT_SECRET`, `DB_PATH`
+- [x] Verify both `client` and `server` start without errors
+- [x] Git init + first commit
 
 ### Files to Create
 ```
@@ -107,10 +107,10 @@ SmartClaimr/
 ```
 
 ### Acceptance Criteria
-- [ ] `cd client && npm run dev` → Vite dev server starts, shows styled page
-- [ ] `cd server && node app.js` → Express server starts on port 5000
-- [ ] Tailwind classes render correctly (test with a colored div)
-- [ ] Git repo initialized with first commit
+- [x] `cd client && npm run dev` → Vite dev server starts, shows styled page
+- [x] `cd server && node app.js` → Express server starts on port 5000
+- [x] Tailwind classes render correctly (test with a colored div)
+- [x] Git repo initialized with first commit
 
 ### Git
 ```
@@ -133,8 +133,8 @@ git commit -m "chore: project scaffold — React+Vite client, Express server, do
 
 ## Phase 1: Database Models + Auth System
 
-- **Status**: ⬜ NOT STARTED
-- **Completed**: —
+- **Status**: ✅ COMPLETED
+- **Completed**: 2026-03-29 11:00 IST
 - **Estimated Time**: 45 minutes
 - **Depends on**: Phase 0 ✅
 
@@ -143,16 +143,16 @@ SQLite database schema, signup (auto-creates company + admin), login, JWT middle
 
 ### Tasks
 
-- [ ] Create SQLite database initialization script (`server/db/init.js`)
-- [ ] Define tables: `companies`, `users`, `expenses`, `expense_approvals`
-- [ ] Create `server/middleware/auth.js` — JWT verification + role-checking
-- [ ] Create `server/routes/auth.js` — signup & login endpoints
-- [ ] `POST /api/auth/signup` → creates company + admin user, returns JWT
-- [ ] `POST /api/auth/login` → validates credentials, returns JWT
-- [ ] Create `client/src/pages/AuthPage.jsx` — signup/login toggle form
-- [ ] Create `client/src/context/AuthContext.jsx` — React context for auth state
-- [ ] Wire up frontend to backend auth endpoints
-- [ ] Test full signup → login flow
+- [x] Create SQLite database initialization script (`server/db/init.js`)
+- [x] Define tables: `companies`, `users`, `expenses`, `expense_approvals`
+- [x] Create `server/middleware/auth.js` — JWT verification + role-checking
+- [x] Create `server/routes/auth.js` — signup & login endpoints
+- [x] `POST /api/auth/signup` → creates company + admin user, returns JWT
+- [x] `POST /api/auth/login` → validates credentials, returns JWT
+- [x] Create `client/src/pages/AuthPage.jsx` — signup/login toggle form
+- [x] Create `client/src/context/AuthContext.jsx` — React context for auth state
+- [x] Wire up frontend to backend auth endpoints
+- [x] Test full signup → login flow
 
 ### Files to Create
 ```
@@ -225,11 +225,11 @@ CREATE TABLE expense_approvals (
 ```
 
 ### Acceptance Criteria
-- [ ] SQLite DB file is auto-created on server start with correct schema
-- [ ] Signup creates a new company + admin user, returns valid JWT
-- [ ] Login with correct creds returns JWT; wrong creds returns 401
-- [ ] Protected route returns 403 without valid JWT
-- [ ] Frontend signup form connects to backend successfully
+- [x] SQLite DB file is auto-created on server start with correct schema
+- [x] Signup creates a new company + admin user, returns valid JWT
+- [x] Login with correct creds returns JWT; wrong creds returns 401
+- [x] Protected route returns 403 without valid JWT
+- [x] Frontend signup form connects to backend successfully
 
 ### Git
 ```
@@ -696,4 +696,5 @@ git tag -a v0.1.0-mvp -m "SmartClaimr MVP — 5 hour build"
 
 | Date | Phase | Chat Session | Notes |
 |------|-------|-------------|-------|
-| — | — | — | — |
+| 2026-03-29 10:10 IST | Phase 0 | cc1cca09 | Scaffold complete. Vite+React+TW3 client, Express server, all verified. Commit: c0f00b9 |
+| 2026-03-29 11:00 IST | Phase 1 | 099316f9 | Auth system complete. SQLite schema (4 tables), signup/login/JWT, AuthContext, AuthPage, protected routes. All tests passing. |

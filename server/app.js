@@ -1,23 +1,32 @@
 /**
  * SmartClaimr — Express Server Entry Point
  *
- * Basic Express app with CORS, JSON parsing, and health check.
- * Database and routes will be added in Phase 1.
+ * Database initialization, auth routes, and middleware.
  */
 
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
+
+// Initialize database (creates schema on first run)
+const { getDb } = require('./db/init');
+
+// Routes
+const authRoutes = require('./routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ── Middleware ──────────────────────────────────
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: process.env.CLIENT_URL || ['http://localhost:5173', 'http://localhost:5174'],
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));
+
+// ── Routes ─────────────────────────────────────
+app.use('/api/auth', authRoutes);
 
 // ── Health Check ───────────────────────────────
 app.get('/api/health', (req, res) => {
@@ -41,7 +50,11 @@ app.use((err, req, res, next) => {
 });
 
 // ── Start ──────────────────────────────────────
+// Initialize DB before starting server
+getDb();
+
 app.listen(PORT, () => {
   console.log(`\n  🚀 SmartClaimr API running on http://localhost:${PORT}`);
-  console.log(`  📡 Health check: http://localhost:${PORT}/api/health\n`);
+  console.log(`  📡 Health check: http://localhost:${PORT}/api/health`);
+  console.log(`  🔐 Auth: http://localhost:${PORT}/api/auth\n`);
 });
