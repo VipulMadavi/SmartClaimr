@@ -16,6 +16,7 @@ const { getDb } = require('./db/init');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const expenseRoutes = require('./routes/expenses');
+const approvalRoutes = require('./routes/approvals');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,6 +32,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/expenses', expenseRoutes);
+app.use('/api/approvals', approvalRoutes);
 
 // ── Health Check ───────────────────────────────
 app.get('/api/health', (req, res) => {
@@ -62,5 +64,6 @@ app.listen(PORT, () => {
   console.log(`  📡 Health check: http://localhost:${PORT}/api/health`);
   console.log(`  🔐 Auth: http://localhost:${PORT}/api/auth`);
   console.log(`  👥 Users: http://localhost:${PORT}/api/users`);
-  console.log(`  💰 Expenses: http://localhost:${PORT}/api/expenses\n`);
+  console.log(`  💰 Expenses: http://localhost:${PORT}/api/expenses`);
+  console.log(`  ✅ Approvals: http://localhost:${PORT}/api/approvals\n`);
 });

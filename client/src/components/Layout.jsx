@@ -14,6 +14,11 @@ export default function Layout({ children }) {
     { path: '/', label: 'Dashboard', icon: '📊' },
   ];
 
+  // Manager and admin can see approvals
+  if (user?.role === 'manager' || user?.role === 'admin') {
+    navLinks.push({ path: '/approvals', label: 'Approvals', icon: '✅' });
+  }
+
   // Admin-only links
   if (user?.role === 'admin') {
     navLinks.push({ path: '/admin', label: 'Team', icon: '👥' });

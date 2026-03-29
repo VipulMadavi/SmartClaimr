@@ -11,6 +11,7 @@ import AuthPage from './pages/AuthPage';
 import AdminPage from './pages/AdminPage';
 import Dashboard from './pages/Dashboard';
 import AddExpense from './pages/AddExpense';
+import ApprovalsPage from './pages/ApprovalsPage';
 
 /**
  * Protected Route wrapper — redirects to /auth if not logged in
@@ -74,6 +75,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <AdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/approvals"
+            element={
+              <ProtectedRoute>
+                <ApprovalsPage />
               </ProtectedRoute>
             }
           />

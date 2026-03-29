@@ -35,7 +35,7 @@
 | 1 | Database Models + Auth System | 45 min | ✅ COMPLETED |
 | 2 | User Management — Admin Panel | 30 min | ✅ COMPLETED |
 | 3 | Expense Submission + Feed UI | 45 min | ✅ COMPLETED |
-| 4 | Approval Workflow | 50 min | ⬜ NOT STARTED |
+| 4 | Approval Workflow | 50 min | ✅ COMPLETED |
 | 5 | Currency Conversion | 20 min | ⬜ NOT STARTED |
 | 6 | OCR Receipt Scanning + AI Suggestions | 40 min | ⬜ NOT STARTED |
 | 7 | UI Polish + Responsive Design | 30 min | ⬜ NOT STARTED |
@@ -370,8 +370,8 @@ git commit -m "feat(phase-3): expense submission + feed-based dashboard with car
 
 ## Phase 4: Approval Workflow
 
-- **Status**: ⬜ NOT STARTED
-- **Completed**: —
+- **Status**: ✅ COMPLETED
+- **Completed**: 2026-03-29 12:40 IST
 - **Estimated Time**: 50 minutes
 - **Depends on**: Phase 3 ✅
 
@@ -380,11 +380,11 @@ Manager sees pending approvals in a feed, can approve/reject with one tap. Simpl
 
 ### Tasks
 
-- [ ] Create `server/routes/approvals.js`
-- [ ] `GET /api/approvals/pending` — expenses awaiting current user's approval
-- [ ] `POST /api/approvals/:expenseId/approve` — approve + advance or finalize
-- [ ] `POST /api/approvals/:expenseId/reject` — reject + finalize
-- [ ] Implement approval logic:
+- [x] Create `server/routes/approvals.js`
+- [x] `GET /api/approvals/pending` — expenses awaiting current user's approval
+- [x] `POST /api/approvals/:expenseId/approve` — approve + advance or finalize
+- [x] `POST /api/approvals/:expenseId/reject` — reject + finalize
+- [x] Implement approval logic:
   ```
   IF amount < threshold (₹5000):
       Manager approves → DONE
@@ -392,13 +392,13 @@ Manager sees pending approvals in a feed, can approve/reject with one tap. Simpl
       Manager approves → goes to Admin → Admin approves → DONE
   ANY rejection → DONE (rejected)
   ```
-- [ ] Create `client/src/pages/ApprovalsPage.jsx`
-- [ ] Feed of pending expense cards
-- [ ] Each card has Approve (green) + Reject (red) buttons
-- [ ] Optional comment text input
-- [ ] On action: card animates out, toast notification
-- [ ] Modify `ExpenseCard.jsx` — add `variant` prop (`"view"` vs `"action"`)
-- [ ] Action variant shows approve/reject buttons
+- [x] Create `client/src/pages/ApprovalsPage.jsx`
+- [x] Feed of pending expense cards
+- [x] Each card has Approve (green) + Reject (red) buttons
+- [x] Optional comment text input
+- [x] On action: card animates out, toast notification
+- [x] Modify `ExpenseCard.jsx` — add `variant` prop (`"view"` vs `"action"`)
+- [x] Action variant shows approve/reject buttons
 
 ### Files to Create/Modify
 ```
@@ -408,12 +408,12 @@ client/src/components/ExpenseCard.jsx (MODIFY — add variant prop)
 ```
 
 ### Acceptance Criteria
-- [ ] Manager sees only their team's pending expenses
-- [ ] Manager can approve → expense status changes to "approved"
-- [ ] Manager can reject → expense status changes to "rejected"
-- [ ] High-value expenses (≥ ₹5000) go to admin after manager approval
-- [ ] Admin can approve/reject escalated expenses
-- [ ] Toast notification shows on approve/reject action
+- [x] Manager sees only their team's pending expenses
+- [x] Manager can approve → expense status changes to "approved"
+- [x] Manager can reject → expense status changes to "rejected"
+- [x] High-value expenses (≥ ₹5000) go to admin after manager approval
+- [x] Admin can approve/reject escalated expenses
+- [x] Toast notification shows on approve/reject action
 
 ### Git
 ```
@@ -700,3 +700,4 @@ git tag -a v0.1.0-mvp -m "SmartClaimr MVP — 5 hour build"
 | 2026-03-29 11:00 IST | Phase 1 | 099316f9 | Auth system complete. SQLite schema (4 tables), signup/login/JWT, AuthContext, AuthPage, protected routes. All tests passing. |
 | 2026-03-29 11:30 IST | Phase 2 | 5cc6af78 | Admin panel complete. User CRUD API, card-based user list, add/edit/delete modals, role badges, manager assignment. Verified in browser. |
 | 2026-03-29 12:00 IST | Phase 3 | a6e9f004 | Expense submission + feed UI complete. Expense CRUD API with role-scoped access, Dashboard with stats/filters/card feed, AddExpense with category grid + receipt upload + preview. All verified in browser. |
+| 2026-03-29 12:40 IST | Phase 4 | f0d1db1e | Approval workflow complete. 2-level approval logic (manager → admin escalation for ≥₹5000). ApprovalsPage with action cards, approve/reject with comments, card exit animations, toast notifications. Tested with manager/employee users. |

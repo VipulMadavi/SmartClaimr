@@ -3,11 +3,15 @@
  *
  * Props:
  *   - expense: the expense object
- *   - variant: 'view' (default) or 'action' (shows approve/reject buttons — Phase 4)
- *   - onApprove: callback for approve action (Phase 4)
- *   - onReject: callback for reject action (Phase 4)
+ *   - variant: 'view' (default) or 'action' (shows approve/reject buttons)
+ *   - onApprove: callback(comment) for approve action
+ *   - onReject: callback(comment) for reject action
+ *   - isProcessing: boolean, shows loading state on buttons
+ *   - isRemoving: boolean, triggers exit animation
  *   - style: inline styles (for animation delays)
  */
+
+import { useState } from 'react';
 
 const CATEGORY_CONFIG = {
   food: { icon: '🍔', label: 'Food & Dining', color: 'from-orange-400 to-amber-500' },
@@ -59,14 +63,32 @@ function formatDate(dateStr) {
   }
 }
 
-export default function ExpenseCard({ expense, variant = 'view', style }) {
+export default function ExpenseCard({
+  expense,
+  variant = 'view',
+  onApprove,
+  onReject,
+  isProcessing = false,
+  isRemoving = false,
+  style,
+}) {
   const category = CATEGORY_CONFIG[expense.category] || CATEGORY_CONFIG.other;
   const status = STATUS_CONFIG[expense.status] || STATUS_CONFIG.pending;
+  const [comment, setComment] = useState('');
+  const [showComment, setShowComment] = useState(false);
+
+  // High-value threshold marker
+  const isHighValue = expense.amount >= 5000;
 
   return (
     <div
-      className="card p-5 animate-slide-up"
-      style={style}
+      className={`card p-5 animate-slide-up transition-all duration-400
+        ${isRemoving ? 'opacity-0 scale-95 -translate-x-8' : ''}
+      `}
+      style={{
+        ...style,
+        ...(isRemoving ? { transition: 'all 400ms ease-out' } : {}),
+      }}
     >
       <div className="flex items-start gap-4">
         {/* Category Icon */}
@@ -83,7 +105,14 @@ export default function ExpenseCard({ expense, variant = 'view', style }) {
             <h3 className="text-sm font-semibold text-slate-700 truncate">
               {category.label}
             </h3>
-            <span className={status.className}>{status.label}</span>
+            <div className="flex items-center gap-2">
+              {variant === 'action' && isHighValue && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-600 border border-amber-200">
+                  ⚡ High Value
+                </span>
+              )}
+              <span className={status.className}>{status.label}</span>
+            </div>
           </div>
 
           {/* Description */}
@@ -111,6 +140,24 @@ export default function ExpenseCard({ expense, variant = 'view', style }) {
             )}
           </div>
 
+          {/* Approval history (for action variant) */}
+          {variant === 'action' && expense.approvals && expense.approvals.length > 0 && (
+            <div className="mt-2 space-y-1">
+              {expense.approvals.map((approval) => (
+                <div
+                  key={approval.id}
+                  className="text-xs flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-success-50 text-success-600"
+                >
+                  <span>✓</span>
+                  <span>
+                    {approval.approver_name} ({approval.approver_role}) approved
+                    {approval.comment ? ` — "${approval.comment}"` : ''}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* AI Suggestion placeholder — Phase 6 */}
           {expense.ai_suggestion && (
             <div className="mt-2 text-xs flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-brand-50 text-brand-600">
@@ -133,15 +180,62 @@ export default function ExpenseCard({ expense, variant = 'view', style }) {
         </div>
       </div>
 
-      {/* Action buttons — Phase 4 approve/reject */}
+      {/* Action buttons — approve/reject */}
       {variant === 'action' && (
-        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
-          <button className="btn-success flex-1 py-2 text-xs">
-            ✓ Approve
-          </button>
-          <button className="btn-danger flex-1 py-2 text-xs">
-            ✕ Reject
-          </button>
+        <div className="mt-4 pt-3 border-t border-slate-100">
+          {/* Optional comment toggle & input */}
+          <div className="mb-3">
+            <button
+              onClick={() => setShowComment(!showComment)}
+              className="text-xs text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1"
+              type="button"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              {showComment ? 'Hide comment' : 'Add comment'}
+            </button>
+            {showComment && (
+              <input
+                type="text"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Optional comment..."
+                className="input mt-2 text-xs py-2"
+                maxLength={200}
+              />
+            )}
+          </div>
+
+          {/* Approve / Reject buttons */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onApprove && onApprove(comment)}
+              disabled={isProcessing}
+              className="btn-success flex-1 py-2 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+              id={`approve-btn-${expense.id}`}
+            >
+              {isProcessing ? (
+                <span className="flex items-center justify-center gap-1.5">
+                  <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Processing...
+                </span>
+              ) : (
+                '✓ Approve'
+              )}
+            </button>
+            <button
+              onClick={() => onReject && onReject(comment)}
+              disabled={isProcessing}
+              className="btn-danger flex-1 py-2 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+              id={`reject-btn-${expense.id}`}
+            >
+              ✕ Reject
+            </button>
+          </div>
         </div>
       )}
     </div>
