@@ -73,3 +73,12 @@
 **Decisions made**: Bottom tab bar instead of hamburger menu for mobile — better discoverability. SVG icons over emoji for nav — cleaner, scalable, supports active/inactive states. Toast context over prop drilling — any component can trigger toasts without threading callbacks. Dark mode deferred (stretch goal — not enough time).
 **Blockers / Surprises**: None — clean execution. Vite HMR handled all changes without restarts. Mobile viewport tested at 375x667 — bottom nav renders perfectly.
 **Commit**: `pending`
+
+---
+
+## Phase 8: Testing + Release — 2026-03-29 14:00 IST
+**Duration**: ~25m actual / 20m planned
+**What was built**: Comprehensive smoke test of all 13 user flows via browser automation with screenshot verification. Tested: signup → company creation, login → JWT auth, admin creates manager+employee, employee submits expenses (₹2,500 food + ₹7,500 travel), currency conversion (USD→INR live rate display), manager approval feed (approve low-value → finalized, approve high-value → escalated to admin), expense history filters, role-based navigation, logout, and console error check. All 13 tests passed. Fixed 1 bug: removed dead `idCounter` variable in `Toast.jsx`. AuthPage already had `autoComplete` attributes from Phase 7. Created detailed testing report with 15 improvement recommendations categorized by effort (Quick Wins / Medium / Major). Documented 8 known tech debt items.
+**Known issues**: No automated test suite (manual/browser only). JWT in localStorage (should be httpOnly cookie for prod). No rate limiting on API. Receipt images not persisted. Escalation threshold hardcoded at ₹5,000. No password reset flow. SQLite single-writer bottleneck for >100 concurrent users.
+**Total build time**: ~3 hours 50 minutes (across 9 sessions)
+**Commit**: `pending`

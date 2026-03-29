@@ -82,7 +82,6 @@ function ToastItem({ toast, onDismiss }) {
  */
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
-  let idCounter = 0;
 
   const showToast = useCallback((message, type = 'success', duration = 3500) => {
     const id = Date.now() + Math.random();
